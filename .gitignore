@@ -4,7 +4,9 @@
 *.jl.mem
 /docs/build/
 .DS_Store
-database/processed
+database/parsed
+database/parsed/*
 .CondaPkg
 .CondaPkg/*
 .vscode
+database/parsed/.process
