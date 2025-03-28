@@ -1,1 +1,10 @@
 /Manifest.toml
+*.jl.*.cov
+*.jl.cov
+*.jl.mem
+/docs/build/
+.DS_Store
+database/processed
+.CondaPkg
+.CondaPkg/*
+.vscode
