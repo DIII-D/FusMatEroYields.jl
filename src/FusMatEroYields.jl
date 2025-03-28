@@ -1,6 +1,5 @@
 module FusMatEroYields
 
-# Write your package code here.module FusionMaterialErosion
 using FileIO
 using Dates
 using FusionSpecies
