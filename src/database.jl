@@ -58,9 +58,9 @@ function load_yields_database!(; remake_database=false, force_reload=false, src_
         (!is_yield_db_parsed() || remake_database) ? make_yields_database!(;src_filepaths, parsed_dir) : nothing
         yields_database[:sputtering][:angular_behrisch] = AngularBerischDataBase(fps[:parsed][:angular_behrisch])
         yields_database[:sputtering][:normal_behrisch] = NormalBerischDataBase(fps[:parsed][:normal_behrisch])
-        yields_database[:sputtering][:rust_bca] = load_rustbca_database(fps[:parsed][:rustbca_dir])
-        yields_database[:reflection_particle][:rust_bca] = load_rustbca_database(fps[:parsed][:rustbca_dir])
-        yields_database[:reflection_energy][:rust_bca] = load_rustbca_database(fps[:parsed][:rustbca_dir])
+        yields_database[:sputtering][:rustbca] = load_rustbca_database(fps[:parsed][:rustbca_dir])
+        yields_database[:reflection_particle][:rustbca] = load_rustbca_database(fps[:parsed][:rustbca_dir])
+        yields_database[:reflection_energy][:rustbca] = load_rustbca_database(fps[:parsed][:rustbca_dir])
         yields_database[:loaded] = true
     end
 end
@@ -76,10 +76,49 @@ sputtering_yield(p::Pair{Symbol,Symbol}, args...; kw...) = sputtering_yield(p[1]
 function sputtering_yield(projectile::Symbol, target::Symbol, database::Symbol; kw...)
     p = FusionSpecies.get_element(projectile) 
     t = FusionSpecies.get_element(target)
+    sputtering_yield(p, t, database; kw...)
+end
+sputtering_yield(p::Species, t::Element, database; kw...) = sputtering_yield(p.element, t, database; kw...)
+function sputtering_yield(p::Union{Element}, t::Union{Element}, database::Symbol; value=missing, kw...)
+    !ismissing(value) && return sputtering_yield(p, t, value; kw...)
+
     pair = lowercase(p.name) => lowercase(t.name)
     println("looking for sputtering yield `$pair` into database `$database`")
     db = get_yields_database()[:sputtering]
-    @assert database ∈ keys(db) "database `$database` not found in sputtering databases ... Available databases: $(keys(db))"  
-    sputtering_yield(db[database], pair; kw...)
+    @assert database ∈ keys(db) "database `$database` not found in sputtering databases ... Available databases: $(keys(db))"
+    return sputtering_yield(db[database], pair; kw...)
 end
 
+no_sputtering_yield(p::Union{Element,AbstractSpecies}, t::Union{Element,AbstractSpecies}, args...; kw...) = Yield{:sputtering,Missing,Missing}(get_element(p), get_element(t), missing, missing, Dict())
+
+function no_sputtering_yield(projectile::Symbol, target::Symbol, args...; kw...)
+    p = FusionSpecies.get_element(projectile) 
+    t = FusionSpecies.get_element(target)
+    no_sputtering_yield(p, t, args...; kw...)
+end
+
+
+particlereflection_yield(p::Pair{Symbol,Symbol}, args...; kw...) = particlereflection_yield(p[1], p[2], args...; kw...)
+
+function particlereflection_yield(projectile::Symbol, target::Symbol, database::Symbol; kw...)
+    p = FusionSpecies.get_element(projectile)
+    t = FusionSpecies.get_element(target)
+    particlereflection_yield(p, t, database; kw...)
+end
+particlereflection_yield(p::Species, t::Element, database; kw...) = particlereflection_yield(p.element, t, database; kw...)
+function particlereflection_yield(p::Union{Element}, t::Union{Element}, database::Symbol; value=missing, kw...)
+    !ismissing(value) && return particlereflection_yield(p, t, value; kw...)
+    pair = lowercase(p.name) => lowercase(t.name)
+    println("looking for sputtering yield `$pair` into database `$database`")
+    db = get_yields_database()[:particlereflection]
+    @assert database ∈ keys(db) "database `$database` not found in sputtering databases ... Available databases: $(keys(db))"
+    particlereflection_yield(db[database], pair; kw...)
+end
+
+no_particlereflection_yield(p::Union{Element,AbstractSpecies}, t::Union{Element,AbstractSpecies}, args...; kw...) = Yield{:particlereflection,Missing,Missing}(get_element(p), get_element(t), missing, missing, Dict())
+
+function no_particlereflection_yield(projectile::Symbol, target::Symbol, args...; kw...)
+    p = FusionSpecies.get_element(projectile)
+    t = FusionSpecies.get_element(target)
+    no_particlereflection_yield(p, t, args...; kw...)
+end

@@ -68,7 +68,7 @@ function RustBCAYieldData(data, target, projectile, npy_file)
     info = Dict("file" => npy_file)
     RustBCAYieldData(target, projectile, yields_["R_p"], yields_["R_E"], yields_["Y"], energy, theta, info)
 end
-function sputtering_yield(db::RustBCADataBase, pair::Pair; kw...)
+function sputtering_yield(db::RustBCADataBase, pair::Pair;  kw...)
     out = []
     for v in db.data
         if get_pt(v) == pair
@@ -79,9 +79,27 @@ function sputtering_yield(db::RustBCADataBase, pair::Pair; kw...)
     if length(out) == 1
         return sputtering_yield(out[1])
     else
-        error("out:$out")
+        error("sputtering yield  for pair $pair not found in rustbca database!")
     end
 end
+
+function reflection_yield(db::RustBCADataBase, pair::Pair; kw...)
+    out = []
+    for v in db.data
+        if get_pt(v) == pair
+            push!(out, v)
+        end
+    end
+
+    if length(out) == 1
+        return reflection_yield(out[1])
+    else
+        error("sputtering yield  for pair $pair not found in rustbca database!")
+    end
+end
+
+
+
 
 
 
@@ -110,8 +128,10 @@ function parse_file(dir_path, ::Type{<:RustBCAYieldData})
     files = get_file_list(dir_path, ".npy")
     vcat([rustbca_npy2vec(file) for file in files]...)
 end
-
-sputtering_yield(yield::RustBCAYieldData; kx=2) = Yield{Sputtering}(get_element(yield.projectile).symbol, get_element(yield.target).symbol, yield, Dierckx.Spline2D(yield.E, yield.θ, yield.Y; kx=2), yield.info)
+sputtering_yield(p,t, yield::Float64) = Yield{:sputtering}(get_element(p), get_element(t), yield, yield, Dict())
+sputtering_yield(yield::RustBCAYieldData; kx=2) = Yield{:sputtering}(get_element(yield.projectile), get_element(yield.target), yield, Dierckx.Spline2D(yield.E, yield.θ, yield.Y; kx=2), yield.info)
+particlereflection_yield(yield::RustBCAYieldData; kx=2) = Yield{:particlereflection}(get_element(yield.projectile), get_element(yield.target), yield, Dierckx.Spline2D(yield.E, yield.θ, yield.Y; kx=2), yield.info)
+particlereflection_yield(p, t, yield::Float64) = Yield{:particlereflection}(get_element(p), get_element(t), yield, yield, Dict())
 
 get_E(Y::Yield) = get_E(Y.data)
 get_E(Y::RustBCAYieldData) = Y.E

@@ -5,7 +5,7 @@ using Dates
 using FusionSpecies
 using Dierckx
 using Interpolations
-import FusionSpecies: dic_expo
+import FusionSpecies: dic_expo, Element
 using RecipesBase
 using Format
 using PyCall
@@ -17,8 +17,8 @@ include("plot_recipes.jl")
 include("io.jl")
 
 export sputtering_yield
-export get_yields_database, load_yields_database!
-export make_yields_database!
+export get_yields_database, load_yields_database!, no_sputtering_yield, particlereflection_yield, no_particlereflection_yield
+export make_yields_database!, SputteringYield, Yield, YieldData, YieldEnergyData, YieldEnergyAngleData
 
 end
 

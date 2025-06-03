@@ -8,7 +8,7 @@ targets = [:Cr]
 # β = [1.0, 2.0, 4.0, 6.0]
 # Tₑ = 10 .^ LinRange(0:0.05:3)
 
-Y_DCr = sputtering_yield(:D, :Cr, :rust_bca)
+Y_DCr = sputtering_yield(:D, :Cr, :rustbca)
 plot(Y_DCr, θ=0.0, size=(600,400))
 
 E =10.0 #eV

@@ -3,7 +3,7 @@ width = 10
 get_label(data::T) where {T<:BehrischAngularSputteringYieldData} = "$(data.projectile) → $(data.target) | E_0 = $(data.E0) eV [Behrisch]"
 get_label(sp::T, θ::Float64) where {T<:Yield{<:BehrischAngularSputteringYields,<:Any}} = "$(sp.projectile) → $(sp.target) | θ = $(format(θ,;precision=0)) deg [Behrisch]"
 get_label(sp::T, θ::Float64) where {T<:Yield{<:BehrischNormalIncidenceSputteringYieldData,<:Any}} = "$(sp.projectile) → $(sp.target) [Behrisch normal]"
-get_label(sp::T, θ::Float64) where {T<:Yield{Sputtering,<:RustBCAYieldData,<:Any}} = "Y_sputt $(sp.projectile) → $(sp.target) | θ = $(format(θ,;precision=0)) deg [rustbca]"
+get_label(sp::T, θ::Float64) where {T<:Yield{:sputtering,<:RustBCAYieldData,<:Any}} = "Y_sputt $(sp.projectile) → $(sp.target) | θ = $(format(θ,;precision=0)) deg [rustbca]"
 # get_label(sp::IntegratedYield{T,D,V}, θ::Float64) where {T<:Yield{Sputtering,<:RustBCAYieldData,<:Any},D,V} = "∫Y_sputt(E,θ)dE $(get_pt(sp)) | θ = $(format(θ,;precision=0)) deg [rustbca:$(basename(sp.yield.data.label))]"
 
 # @recipe function f(data::T; θ=collect(range(0.0, 80.0, 9))) where {T<:BehrischAngularSputteringYield}
@@ -26,13 +26,13 @@ get_label(sp::T, θ::Float64) where {T<:Yield{Sputtering,<:RustBCAYieldData,<:An
         @series begin
             seriestype := :path
             linestyle --> :solid
-            label := get_label(sp, θ_)
+            label --> get_label(sp, θ_)
             yscale --> :log10
             xscale --> :log10
             linewidth := 2.0
-            xlabel := "E [eV]"
-            ylim := [1e-5, 1]
-            ylabel := "Sputtering yield"
+            xlabel --> "E [eV]"
+            ylim --> [1e-5, 1]
+            ylabel --> "Sputtering yield"
             E, sp.(E, θ_ .+ 0 .* E) .+ Y_min
         end
     end

@@ -3,9 +3,7 @@ Author: Jerome Guterl (guterlj@fusion.gat.com)
  Company: General Atomics
  sputtering_yields.jl (c) 2024=#
 abstract type AbstractYield{T} end
-abstract type Sputtering end 
-abstract type ReflectionParticle end
-abstract type ReflectionEnergy end
+
 
 # SputteringYield = AbstractYield{Sputtering}
 # ReflectionParticleYield = AbstractYield{ReflectionParticle}
@@ -14,6 +12,7 @@ abstract type ReflectionEnergy end
 abstract type YieldData end
 abstract type YieldEnergyData <: YieldData end
 abstract type YieldEnergyAngleData <: YieldData end
+
 
 """
     Yield{T,D<:YieldData,V} <: AbstractYield{T}
@@ -29,17 +28,26 @@ A struct representing a yield curve for a specific projectile-target combination
 - `info::Dict`: A dictionary containing additional information about the yield curve.
 """
 
-struct Yield{T,D<:YieldData,V} <: AbstractYield{T}
-    projectile::Symbol
-    target::Symbol
+struct Yield{T,D,V} <: AbstractYield{T}
+    projectile::Element
+    target::Element
     data::D
     interp::V
     info::Dict
 end
-
+SputteringYield{T,D,V} = Yield{:sputtering,D,T}
+ParticleReflectionYield{T,D,V} = Yield{:particle_reflection,D,T}
+EnergyReflectionYield{T,D,V} = Yield{:energy_reflection,D,T}
 Yield{T}(p, t, d::D, v::V, i) where {T,D,V} = Yield{T,D,V}(p,t,d,v, i)
+
 #get_pt(Y::Yield) = "$(Y.projectile) → $(Y.target)"
 get_pt(Y::Yield) = Y.projectile => Y.target
+
+function (sp::Yield{T,Float64,Float64})(args...) where T 
+    return sp.interp
+
+end
+
 function (sp::Yield{T,D,V})(E::Float64, θ::Float64) where {T,D<:YieldEnergyAngleData,V}
     out = Dierckx.evaluate(sp.interp, E, θ)
     return out < 0 ? 0.0 : out
@@ -62,3 +70,6 @@ function (sp::Yield{T,D,V})(E::Array) where {T,D<:YieldEnergyData,V}
     return out
 end
 
+function (sp::Yield{T,Missing,Missing})(args...) where {T}
+    return 0.0
+end
