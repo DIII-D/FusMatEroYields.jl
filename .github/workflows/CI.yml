@@ -31,6 +31,9 @@ jobs:
         arch:
           - x64
     steps:
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.PRIVATE_DEPLOY_KEY}}
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v2
         with:
@@ -42,4 +45,5 @@ jobs:
           localregistry: |
             https://github.com/DIII-D/D3DRegistry.jl
             git@github.com:DIII-D/D3DRegistry.jl.git
+          git_cli: true
       - uses: julia-actions/julia-runtest@v1
