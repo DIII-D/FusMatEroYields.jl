@@ -1,7 +1,7 @@
 name = "FusMatEroYields"
 uuid = "cc0975e7-7da7-4057-a477-77a0fed3e7b5"
 authors = ["Jerome Guterl <guterlj@fusion.gat.com> and contributors"]
-version = "1.1.1"
+version = "1.1.2"
 
 [deps]
 CondaPkg = "992eb4ea-22a4-4c89-a5bb-47a3300528ab"
