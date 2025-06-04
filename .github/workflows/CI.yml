@@ -40,6 +40,8 @@ jobs:
       - uses: julia-actions/julia-buildpkg@v1
         with:
           registry: https://github.com/DIII-D/D3DRegistry.jl
+          git_cli: true
+          GITHUB_TOKEN: ${{ secrets.PAT_CLI }}
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_CLI }}
       - uses: julia-actions/julia-runtest@v1
