@@ -42,8 +42,7 @@ jobs:
       - uses: julia-actions/cache@v2
       - uses: julia-actions/julia-buildpkg@v1
         with:
-          localregistry: |
-            https://github.com/DIII-D/D3DRegistry.jl
-            git@github.com:DIII-D/D3DRegistry.jl.git
-          git_cli: true
+          registry: https://github.com/DIII-D/D3DRegistry.jl
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_PAT }}
       - uses: julia-actions/julia-runtest@v1
