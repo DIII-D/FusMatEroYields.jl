@@ -9,6 +9,7 @@ import FusionSpecies: dic_expo, Element
 using RecipesBase
 using Format
 using PyCall
+using CondaPkg
 include("yields.jl")
 include("database/behrisch.jl")
 include("database/rustbca.jl")

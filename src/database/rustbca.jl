@@ -104,7 +104,13 @@ end
 
 
 function read_rustbca_npy(npy_file::String)
-    np = pyimport("numpy")
+    np = []
+    try  
+        np = pyimport("numpy")
+    catch
+        CondaPkg.add("numpy")
+        np = pyimport("numpy")
+    end
     data = Dict((k, v) for (k, v) in np.load(npy_file, allow_pickle=true)[].items())
 end
 
